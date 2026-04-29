@@ -40,7 +40,7 @@ files {
   'client/framework/ox.lua',
   'client/framework/esx.lua',
   'client/framework/qbx.lua',
-  'client/framework/sandbox.lua',
+  'client/framework/pulsar.lua',
   'client/compat/qtarget.lua',
 }
 
