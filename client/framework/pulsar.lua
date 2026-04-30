@@ -20,25 +20,12 @@ local function invalidateComputedCache()
 end
 
 local function getJobInfo(jobName)
-    local char = LocalPlayer.state.Character
-    if not char then
-        return false
-    end
-
     if computedCache.jobs[jobName] ~= nil then
         return computedCache.jobs[jobName]
     end
-
-    local jobs = char:GetData("Jobs") or {}
-    for _, job in ipairs(jobs) do
-        if job.Id == jobName then
-            computedCache.jobs[jobName] = job
-            return job
-        end
-    end
-
-    computedCache.jobs[jobName] = false
-    return false
+    local job = exports['pulsar-characters']:GetJobData(jobName)
+    computedCache.jobs[jobName] = job
+    return job
 end
 
 local function getDutyStatus(jobName)
@@ -115,13 +102,12 @@ end)
 
 ---@diagnostic disable-next-line: duplicate-set-field
 function utils.hasPlayerGotGroup(filter, reqDuty, reqOffDuty, workplace, permissionKey, tempjob, rep)
-    local char = LocalPlayer.state.Character
-    if not char then
+    if not LocalPlayer.state.Character then
         return false
     end
 
     if filter == nil and tempjob ~= nil then
-        return char:GetData("TempJob") == tempjob
+        return exports['pulsar-characters']:GetCharData("TempJob") == tempjob
     end
 
     if filter == nil and permissionKey ~= nil then
@@ -175,7 +161,7 @@ function utils.hasPlayerGotGroup(filter, reqDuty, reqOffDuty, workplace, permiss
         end
 
         if tempjob ~= nil then
-            if char:GetData("TempJob") ~= tempjob then
+            if exports['pulsar-characters']:GetCharData("TempJob") ~= tempjob then
                 return false
             end
         end
@@ -246,7 +232,7 @@ function utils.hasPlayerGotGroup(filter, reqDuty, reqOffDuty, workplace, permiss
                         goto continue
                     end
 
-                    if tempjob ~= nil and char:GetData("TempJob") ~= tempjob then
+                    if tempjob ~= nil and exports['pulsar-characters']:GetCharData("TempJob") ~= tempjob then
                         goto continue
                     end
 
