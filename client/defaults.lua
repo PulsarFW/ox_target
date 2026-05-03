@@ -245,6 +245,52 @@ api.addGlobalPlayer({
         end
     },
     {
+        name = "disable_tracker",
+        icon = "fas fa-location-dot-slash",
+        label = "Disable Tracker",
+        distance = 3.0,
+        canInteract = function(entity, distance, coords)
+            if not DoesEntityExist(entity) or not IsPedAPlayer(entity) then
+                return false
+            end
+            local serverId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(entity))
+            if not serverId then
+                return false
+            end
+            local playerState = Player(serverId)
+            if not playerState or not playerState.state then
+                return false
+            end
+            local targetState = playerState.state
+            local canDisable = (
+                not LocalPlayer.state.onDuty
+                or (LocalPlayer.state.onDuty ~= "police"
+                    and LocalPlayer.state.onDuty ~= "prison"
+                    and LocalPlayer.state.onDuty ~= "ems")
+            )
+            and (targetState.onDuty == "police"
+                or targetState.onDuty == "prison"
+                or targetState.onDuty == "ems")
+            and not targetState.trackerDisabled
+            and (
+                targetState.isDead
+                or targetState.isCuffed
+                or IsEntityPlayingAnim(
+                    GetPlayerPed(GetPlayerFromServerId(serverId)),
+                    "missminuteman_1ig_2",
+                    "handsup_base",
+                    3
+                )
+            )
+            return canDisable
+        end,
+
+        onSelect = function(data)
+            data.serverId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(data.entity))
+            TriggerEvent("MDT:Client:DisableTracker", data)
+        end
+    },
+    {
         name = "police_cuff",
         icon = "fas fa-link",
         label = "Cuff",
